@@ -13,7 +13,7 @@ public class Sala {
         this.filas = "A-E";
         this.asientos = new ArrayList<>();
         
-        // Asientos iniciales sin nombres de parámetros
+        // Inicialización de los asientos del mapa
         asientos.add(new Asiento("A", 1, true, 5.2, 45.0, 5, "url_360_A1"));
         asientos.add(new Asiento("A", 2, true, 5.2, 50.0, 5, "url_360_A2"));
         asientos.add(new Asiento("B", 1, false, 4.0, 30.0, 3, "url_360_B1"));
@@ -31,4 +31,12 @@ public class Sala {
         }
         return null;
     }
+
+    public String obtenerCaracteristicas() {
+        return "Sala principal con pantalla de " + tamanoPantalla + " metros y distribución " + filas;
+    }
+
+    // Getters y Setters
+    public double getTamanoPantalla() { return tamanoPantalla; }
+    public String getFilas() { return filas; }
 }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa de Asientos - Cine</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; margin-top: 50px; }
+        .pantalla { background: #333; color: white; padding: 10px; width: 60%; margin: 0 auto 30px auto; border-radius: 5px; }
+        .grid-asientos { display: flex; justify-content: center; gap: 15px; }
+        .asiento { padding: 15px 20px; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; }
+        .disponible { background-color: #28a745; }
+        .ocupado { background-color: #dc3545; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <h1>Selección de Asientos</h1>
+    <div class="pantalla">PANTALLA DE CINE</div>
+
+    <div id="mapa" class="grid-asientos">Cargando mapa...</div>
+
+    <script>
+        fetch('/api/asientos/mapa')
+            .then(response => response.json())
+            .then(data => {
+                const contenedor = document.getElementById('mapa');
+                contenedor.innerHTML = '';
+                data.forEach(asiento => {
+                    const div = document.createElement('div');
+                    div.className = `asiento ${asiento.disponible ? 'disponible' : 'ocupado'}`;
+                    div.innerText = `${asiento.fila}-${asiento.numero}`;
+                    if (asiento.disponible) {
+                        div.onclick = () => alert(`Seleccionaste el asiento: ${asiento.fila}-${asiento.numero}`);
+                    }
+                    contenedor.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error al cargar el mapa:', error));
+    </script>
+
+</body>
+</html>

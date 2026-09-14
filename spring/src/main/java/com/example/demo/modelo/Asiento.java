@@ -9,7 +9,6 @@ public class Asiento {
     private int calificacion;
     private String vista360;
 
-    // Constructor
     public Asiento(String fila, int numero, boolean disponible, double distanciaPantalla, double anguloVision, int calificacion, String vista360) {
         this.fila = fila;
         this.numero = numero;
@@ -20,7 +19,6 @@ public class Asiento {
         this.vista360 = vista360;
     }
 
-    // Métodos principales según el UML
     public boolean estaDisponible() {
         return this.disponible;
     }
@@ -33,13 +31,10 @@ public class Asiento {
         return this.calificacion;
     }
 
-    // Getters y Setters
     public String getFila() { return fila; }
-    public void setFila(String fila) { this.fila = fila; }
-
     public int getNumero() { return numero; }
-    public void setNumero(int numero) { this.numero = numero; }
-
     public boolean isDisponible() { return disponible; }
-    public void setDisponible(boolean disponible) { this.disponible = disponible; }
+    public double getDistanciaPantalla() { return distanciaPantalla; }
+    public double getAnguloVision() { return anguloVision; }
+    public String getVista360() { return vista360; }
 }
