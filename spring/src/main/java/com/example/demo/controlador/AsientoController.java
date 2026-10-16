@@ -16,14 +16,14 @@ public class AsientoController {
         this.sala = new Sala();
     }
 
-    // ENDPOINT (Requisito Nathalia)
+    // ENDPOINT 
     @GetMapping("/{id}/caracteristicas")
     public ResponseEntity<Asiento> obtenerCaracteristicas(@PathVariable String id) {
         // El frontend manda "A1". Separamos la letra (fila) y el número
         String fila = id.substring(0, 1).toUpperCase(); 
         int numero = Integer.parseInt(id.substring(1));
 
-        // Usamos tu método buscarAsiento que está en Sala.java
+        // Usamos método buscarAsiento que está en Sala.java
         Asiento asiento = sala.buscarAsiento(fila, numero);
         
         if (asiento != null) {

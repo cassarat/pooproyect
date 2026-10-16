@@ -2,62 +2,194 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cine - Reserva de Asientos</title>
     <style>
-        /* Estilos básicos para que el panel se vea bonito */
-        #panel-caracteristicas {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #f9f9f9;
-            border: 2px solid #007bff;
-            border-radius: 8px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            margin: 0;
             padding: 20px;
-            width: 250px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
+        h1 { color: #e94560; margin-bottom: 5px; }
+
+        .pantalla-cine {
+            background-color: #e94560;
+            height: 8px;
+            width: 100%;
+            max-width: 600px;
+            margin: 30px 0 50px 0;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.6);
+            position: relative;
+        }
+        
+        .pantalla-cine::after {
+            content: "PANTALLA PRINCIPAL";
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: #888;
+            letter-spacing: 4px;
+        }
+
+        .mapa-asientos {
+            background: #16213e;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .fila {
+            display: flex;
+            gap: 10px; /* Separación entre asientos */
+            align-items: center;
+        }
+
+        /* Pasillo central (separación entre el asiento 5 y 6) */
+        .pasillo {
+            width: 30px; 
+        }
+
+        .letra-fila {
+            font-weight: bold;
+            color: #e94560;
+            font-size: 1.2rem;
+            width: 30px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        .asiento {
+            background-color: #0f3460;
+            color: white;
+            border: 2px solid #0f3460;
+            border-radius: 8px 8px 3px 3px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .asiento:hover {
+            background-color: #e94560;
+            border-color: #e94560;
+            transform: translateY(-4px);
+        }
+
+        /* Panel Modal */
+        #fondo-oscuro {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 999;
+        }
+
+        #panel-caracteristicas {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background-color: #1a1a2e; border: 1px solid #e94560; border-radius: 12px;
+            padding: 25px; width: 280px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); z-index: 1000; text-align: center;
+        }
+
+        #panel-caracteristicas h3 {
+            margin-top: 0; color: #e94560; border-bottom: 2px solid #0f3460; padding-bottom: 10px; font-size: 1.4rem;
+        }
+
+        .dato { margin: 15px 0; font-size: 1.1rem; }
+        .dato span { font-weight: bold; color: #43bccd; }
+
         .btn-cerrar {
-            background-color: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;
+            background-color: #e94560; color: white; border: none; padding: 10px 20px;
+            cursor: pointer; border-radius: 6px; font-weight: bold; margin-top: 20px;
+            width: 100%; transition: background 0.3s; font-size: 1rem;
         }
+        .btn-cerrar:hover { background-color: #d1304a; }
     </style>
 </head>
 <body>
 
-    <h1>Mapa de Asientos</h1>
+    <h1>Selecciona tu Asiento</h1>
+    <div class="pantalla-cine"></div>
     
-    <!-- Botones de prueba (En tu proyecto real, estos serán los cuadros de los asientos) -->
-    <button onclick="verCaracteristicas('A1')">Ver Asiento A1</button>
-    <button onclick="verCaracteristicas('C5')">Ver Asiento C5</button>
-    <button onclick="verCaracteristicas('F10')">Ver Asiento F10</button>
+    <!-- El mapa se generará aquí adentro usando JavaScript -->
+    <div class="mapa-asientos" id="contenedor-mapa"></div>
 
-    <!-- PANEL DEL REQUISITO DE NATHALIA -->
+    <div id="fondo-oscuro" onclick="cerrarPanel()"></div>
+
     <div id="panel-caracteristicas">
-        <h3 style="margin-top: 0;">Detalles: <span id="lbl-id" style="color: #007bff;"></span></h3>
-        <p><strong>Distancia:</strong> <span id="lbl-distancia"></span> m</p>
-        <p><strong>Ángulo:</strong> <span id="lbl-angulo"></span>°</p>
-        <p><strong>Conveniencia:</strong> <span id="lbl-conveniencia"></span></p>
+        <h3>Asiento <span id="lbl-id"></span></h3>
+        <p class="dato">Distancia: <span id="lbl-distancia"></span> m</p>
+        <p class="dato">Ángulo: <span id="lbl-angulo"></span>°</p>
+        <p class="dato">Conveniencia: <span id="lbl-conveniencia"></span>/5</p>
         <button class="btn-cerrar" onclick="cerrarPanel()">Cerrar</button>
     </div>
 
-    <!-- LÓGICA DE JAVASCRIPT -->
     <script>
+        // --- 1. FUNCIÓN PARA DIBUJAR EL CINE ---
+        function generarCine() {
+            const contenedor = document.getElementById('contenedor-mapa');
+            const filas = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+            const asientosPorFila = 10;
+
+            filas.forEach(letra => {
+                // Crear el div de la fila
+                let divFila = document.createElement('div');
+                divFila.className = 'fila';
+
+                // Agregar la letra al principio
+                let spanLetra = document.createElement('span');
+                spanLetra.className = 'letra-fila';
+                spanLetra.textContent = letra;
+                divFila.appendChild(spanLetra);
+
+                // Crear los 10 asientos
+                for (let i = 1; i <= asientosPorFila; i++) {
+                    let btn = document.createElement('button');
+                    btn.className = 'asiento';
+                    btn.textContent = i;
+                     
+                    btn.onclick = function() { verCaracteristicas(letra + i); };
+                    
+                    divFila.appendChild(btn);
+
+                    // Agregar un pasillo central después del asiento 5
+                    if (i === 5) {
+                        let pasillo = document.createElement('div');
+                        pasillo.className = 'pasillo';
+                        divFila.appendChild(pasillo);
+                    }
+                }
+                
+                contenedor.appendChild(divFila);
+            });
+        }
+
+        // --- FUNCIONES DEL REQUISITO ---
         function verCaracteristicas(idAsiento) {
-            // Llamamos al controlador de Spring Boot
             fetch(`/api/asientos/${idAsiento}/caracteristicas`)
                 .then(response => {
                     if (!response.ok) throw new Error('Asiento no encontrado');
                     return response.json();
                 })
                 .then(data => {
-                    // Llenamos el panel con los datos que llegaron de Java
-                    document.getElementById('lbl-id').textContent = data.id;
-                    document.getElementById('lbl-distancia').textContent = data.distanciaPantalla;
-                    document.getElementById('lbl-angulo').textContent = data.anguloVision;
+                    document.getElementById('lbl-id').textContent = data.fila + data.numero;
+                    // Formatear a 2 decimales para que se vea más limpio
+                    document.getElementById('lbl-distancia').textContent = data.distanciaPantalla.toFixed(2);
+                    document.getElementById('lbl-angulo').textContent = data.anguloVision.toFixed(1);
                     document.getElementById('lbl-conveniencia').textContent = data.nivelConveniencia;
 
-                    // Mostramos el panel en pantalla
+                    document.getElementById('fondo-oscuro').style.display = 'block';
                     document.getElementById('panel-caracteristicas').style.display = 'block';
                 })
                 .catch(error => {
@@ -67,8 +199,12 @@
         }
 
         function cerrarPanel() {
+            document.getElementById('fondo-oscuro').style.display = 'none';
             document.getElementById('panel-caracteristicas').style.display = 'none';
         }
+
+        // Iniciar la creación del mapa cuando la página cargue
+        window.onload = generarCine;
     </script>
 </body>
 </html>
