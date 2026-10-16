@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/asientos")
 public class AsientoController {
 
-    private Sala sala;
+    private final Sala sala;
 
-    public AsientoController() {
-        // Inicializamos tu sala real para que cargue los asientos A1, A2 y B1
-        this.sala = new Sala();
+    public AsientoController(Sala sala) {
+        this.sala = sala;
     }
 
     // ENDPOINT (Requisito Nathalia)

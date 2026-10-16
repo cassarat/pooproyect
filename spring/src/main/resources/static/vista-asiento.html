@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vista desde tu asiento · Cine</title>
+<link rel="stylesheet" href="/vista-asiento.css"><script src="/vista-asiento.js" defer></script>
+</head>
+<body>
+<header><a href="/">← Mapa de asientos</a><span>CINE / TU EXPERIENCIA</span></header>
+<main><p class="etiqueta">ANTES DE ELEGIR</p><h1>Así verás la pantalla</h1>
+<p class="introduccion">Explora la vista desde cada asiento disponible.</p>
+<div class="distribucion">
+<section class="panel" aria-labelledby="titulo-asientos">
+<h2 id="titulo-asientos">1. Elige un asiento</h2><div class="pantalla-mapa">PANTALLA</div>
+<div id="asientos" aria-label="Asientos de la sala"></div>
+<p class="leyenda">○ Disponible &nbsp; ● Vista actual &nbsp; × Ocupado</p>
+<p class="nota">Consultar la vista no reserva ni cambia tu selección de asientos.</p>
+<button id="reintentar" hidden>Volver a cargar asientos</button>
+</section>
+<section class="panel vista" aria-labelledby="titulo-vista">
+<h2 id="titulo-vista">2. Mira la pantalla</h2>
+<div id="escenario" class="escenario" role="img" aria-label="Selecciona un asiento para ver la simulación">
+<p id="inicial">Tu vista aparecerá aquí</p>
+<div id="pantalla" hidden><span>CINE</span><small>VISTA PREVIA</small></div>
+<div class="butacas" aria-hidden="true">▰ &nbsp; ▰ &nbsp; ▰ &nbsp; ▰ &nbsp; ▰</div></div>
+<p id="estado" role="status" aria-live="polite">Cargando asientos…</p>
+<div id="detalles" hidden><h3 id="descripcion"></h3>
+<dl><div><dt>Asiento</dt><dd id="asiento">—</dd></div><div><dt>Distancia</dt><dd id="distancia">—</dd></div><div><dt>Ángulo</dt><dd id="angulo">—</dd></div></dl></div>
+<p class="nota">Simulación orientativa, no una fotografía ni una vista 360°. La pantalla cambia de tamaño, posición e inclinación según los datos del asiento. Se toma 0° como vista frontal; el modelo actual no especifica el lado de cada asiento.</p>
+</section></div></main></body></html>

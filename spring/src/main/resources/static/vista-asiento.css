@@ -1,0 +1,31 @@
+:root { color-scheme: dark; font-family: system-ui, sans-serif; background: #10151e; color: #f4f6fa; }
+* { box-sizing: border-box; } body { margin: 0; }
+header { max-width: 1180px; margin: auto; padding: 26px 24px; display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid #303948; font-size: 13px; }
+a { color: #96d5ce; } header span, .etiqueta { letter-spacing: 2px; color: #96d5ce; font-size: 12px; }
+main { max-width: 1180px; margin: auto; padding: 42px 24px; }
+h1 { font-size: clamp(30px, 5vw, 48px); letter-spacing: -1.5px; margin: 8px 0; }
+.introduccion { color: #b8c2d1; margin-bottom: 32px; }
+.distribucion { display: grid; grid-template-columns: 310px minmax(0,1fr); gap: 22px; }
+.panel { border: 1px solid #354153; border-radius: 18px; padding: 24px; background: #1a2230; }
+h2 { font-size: 18px; margin: 0 0 26px; }
+.pantalla-mapa { text-align: center; border-top: 4px solid #a4ddd7; border-radius: 50%; padding-top: 12px; font-size: 10px; letter-spacing: 3px; margin: 18px 0 32px; color: #b8c2d1; }
+.fila { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0; }
+.fila > span { width: 22px; color: #b8c2d1; }
+button { font: inherit; cursor: pointer; border: 1px solid #8292a9; border-radius: 10px; background: #29364a; color: white; padding: 12px; min-height: 46px; }
+button:hover:not(:disabled) { background: #3d5367; }
+button[aria-pressed="true"] { background: #a4ddd7; border-color: #a4ddd7; color: #10151e; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+:focus-visible { outline: 3px solid #eac483; outline-offset: 4px; }
+.leyenda { font-size: 11px; margin-top: 30px; color: #c5d0df; }
+.nota { font-size: 12px; line-height: 1.65; color: #aebbcf; }
+.escenario { height: 310px; position: relative; border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse at 50% 38%, #293748, #090d14 75%); display: grid; place-items: center; perspective: 800px; }
+#inicial { color: #aebbcf; padding: 20px; text-align: center; }
+#pantalla { position: absolute; left: 20%; top: 21%; width: 60%; aspect-ratio: 16/9; max-height: 62%; border: 5px solid #d4e3ef; border-radius: 3px; background: linear-gradient(145deg, #d3eee5, #759bbb 55%, #284159); box-shadow: 0 0 40px #b8dde344; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #102838; transition: transform .35s ease, left .35s ease; }
+#pantalla span { font-size: clamp(18px, 3vw, 34px); letter-spacing: 7px; font-weight: 750; }
+#pantalla small { font-size: 9px; letter-spacing: 2px; margin-top: 8px; }
+.butacas { position: absolute; bottom: 6px; width: 100%; text-align: center; color: #3b4d63; font-size: 34px; white-space: nowrap; }
+#estado { min-height: 24px; color: #a4ddd7; font-size: 14px; }
+dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0 24px; } dt { font-size: 12px; color: #aebbcf; } dd { margin: 6px 0 0; font-size: 23px; } h3 { font-size: 17px; }
+[hidden] { display: none !important; }
+@media (max-width: 760px) { .distribucion { grid-template-columns: 1fr; } header span { display: none; } main { padding-top: 24px; } .panel { padding: 20px; } .escenario { height: 250px; } }
+@media (prefers-reduced-motion: reduce) { #pantalla { transition: none; } }

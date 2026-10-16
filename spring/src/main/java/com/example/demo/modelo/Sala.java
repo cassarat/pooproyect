@@ -2,7 +2,9 @@ package com.example.demo.modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Sala {
     private double tamanoPantalla;
     private String filas;
