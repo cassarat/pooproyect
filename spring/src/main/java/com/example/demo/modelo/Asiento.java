@@ -1,40 +1,51 @@
 package com.example.demo.modelo;
 
 public class Asiento {
+    // atribitos que espera sala
     private String fila;
     private int numero;
     private boolean disponible;
     private double distanciaPantalla;
     private double anguloVision;
-    private int calificacion;
-    private String vista360;
+    private int nivelConveniencia;
+    private String urlImagen;
 
-    public Asiento(String fila, int numero, boolean disponible, double distanciaPantalla, double anguloVision, int calificacion, String vista360) {
+    // Constructor 
+    public Asiento(String fila, int numero, boolean disponible, double distanciaPantalla, double anguloVision, int nivelConveniencia, String urlImagen) {
         this.fila = fila;
         this.numero = numero;
         this.disponible = disponible;
         this.distanciaPantalla = distanciaPantalla;
         this.anguloVision = anguloVision;
-        this.calificacion = calificacion;
-        this.vista360 = vista360;
+        this.nivelConveniencia = nivelConveniencia;
+        this.urlImagen = urlImagen;
     }
 
-    public boolean estaDisponible() {
-        return this.disponible;
+    // Método para que el frontend lo reciba como "A1", "B2", etc.
+    public String getId() {
+        return this.fila + this.numero;
     }
 
-    public String obtenerCaracteristicas() {
-        return "Fila: " + fila + ", Número: " + numero + ", Distancia: " + distanciaPantalla + "m, Ángulo: " + anguloVision + "°";
-    }
-
-    public int obtenerCalificacion() {
-        return this.calificacion;
-    }
+    // --- GETTERS Y SETTERS NECESARIOS PARA SALA.JAVA Y EL FRONTEND ---
 
     public String getFila() { return fila; }
+    public void setFila(String fila) { this.fila = fila; }
+
     public int getNumero() { return numero; }
+    public void setNumero(int numero) { this.numero = numero; }
+
     public boolean isDisponible() { return disponible; }
+    public void setDisponible(boolean disponible) { this.disponible = disponible; }
+
     public double getDistanciaPantalla() { return distanciaPantalla; }
+    public void setDistanciaPantalla(double distanciaPantalla) { this.distanciaPantalla = distanciaPantalla; }
+
     public double getAnguloVision() { return anguloVision; }
-    public String getVista360() { return vista360; }
+    public void setAnguloVision(double anguloVision) { this.anguloVision = anguloVision; }
+
+    public int getNivelConveniencia() { return nivelConveniencia; }
+    public void setNivelConveniencia(int nivelConveniencia) { this.nivelConveniencia = nivelConveniencia; }
+
+    public String getUrlImagen() { return urlImagen; }
+    public void setUrlImagen(String urlImagen) { this.urlImagen = urlImagen; }
 }
