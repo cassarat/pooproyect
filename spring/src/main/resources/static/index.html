@@ -2,41 +2,73 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mapa de Asientos - Cine</title>
+    <title>Cine - Reserva de Asientos</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; margin-top: 50px; }
-        .pantalla { background: #333; color: white; padding: 10px; width: 60%; margin: 0 auto 30px auto; border-radius: 5px; }
-        .grid-asientos { display: flex; justify-content: center; gap: 15px; }
-        .asiento { padding: 15px 20px; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; }
-        .disponible { background-color: #28a745; }
-        .ocupado { background-color: #dc3545; cursor: not-allowed; }
+        /* Estilos básicos para que el panel se vea bonito */
+        #panel-caracteristicas {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f9f9f9;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
+        }
+        .btn-cerrar {
+            background-color: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Selección de Asientos</h1>
-    <div class="pantalla">PANTALLA DE CINE</div>
+    <h1>Mapa de Asientos</h1>
+    
+    <!-- Botones de prueba (En tu proyecto real, estos serán los cuadros de los asientos) -->
+    <button onclick="verCaracteristicas('A1')">Ver Asiento A1</button>
+    <button onclick="verCaracteristicas('C5')">Ver Asiento C5</button>
+    <button onclick="verCaracteristicas('F10')">Ver Asiento F10</button>
 
-    <div id="mapa" class="grid-asientos">Cargando mapa...</div>
+    <!-- PANEL DEL REQUISITO DE NATHALIA -->
+    <div id="panel-caracteristicas">
+        <h3 style="margin-top: 0;">Detalles: <span id="lbl-id" style="color: #007bff;"></span></h3>
+        <p><strong>Distancia:</strong> <span id="lbl-distancia"></span> m</p>
+        <p><strong>Ángulo:</strong> <span id="lbl-angulo"></span>°</p>
+        <p><strong>Conveniencia:</strong> <span id="lbl-conveniencia"></span></p>
+        <button class="btn-cerrar" onclick="cerrarPanel()">Cerrar</button>
+    </div>
 
+    <!-- LÓGICA DE JAVASCRIPT -->
     <script>
-        fetch('/api/asientos/mapa')
-            .then(response => response.json())
-            .then(data => {
-                const contenedor = document.getElementById('mapa');
-                contenedor.innerHTML = '';
-                data.forEach(asiento => {
-                    const div = document.createElement('div');
-                    div.className = `asiento ${asiento.disponible ? 'disponible' : 'ocupado'}`;
-                    div.innerText = `${asiento.fila}-${asiento.numero}`;
-                    if (asiento.disponible) {
-                        div.onclick = () => alert(`Seleccionaste el asiento: ${asiento.fila}-${asiento.numero}`);
-                    }
-                    contenedor.appendChild(div);
-                });
-            })
-            .catch(error => console.error('Error al cargar el mapa:', error));
-    </script>
+        function verCaracteristicas(idAsiento) {
+            // Llamamos al controlador de Spring Boot
+            fetch(`/api/asientos/${idAsiento}/caracteristicas`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Asiento no encontrado');
+                    return response.json();
+                })
+                .then(data => {
+                    // Llenamos el panel con los datos que llegaron de Java
+                    document.getElementById('lbl-id').textContent = data.id;
+                    document.getElementById('lbl-distancia').textContent = data.distanciaPantalla;
+                    document.getElementById('lbl-angulo').textContent = data.anguloVision;
+                    document.getElementById('lbl-conveniencia').textContent = data.nivelConveniencia;
 
+                    // Mostramos el panel en pantalla
+                    document.getElementById('panel-caracteristicas').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("No se pudieron cargar los datos del asiento.");
+                });
+        }
+
+        function cerrarPanel() {
+            document.getElementById('panel-caracteristicas').style.display = 'none';
+        }
+    </script>
 </body>
 </html>

@@ -1,40 +1,36 @@
 package com.example.demo.modelo;
 
 public class Asiento {
-    private String fila;
-    private int numero;
-    private boolean disponible;
-    private double distanciaPantalla;
-    private double anguloVision;
-    private int calificacion;
-    private String vista360;
+    private String id; // Ejemplo: "A1"
+    private boolean ocupado;
+    
+    // ATRIBUTOS NUEVOS 
+    private double distanciaPantalla; // En metros
+    private double anguloVision;      // En grados
+    private String nivelConveniencia; // "Alta", "Media", "Baja"
 
-    public Asiento(String fila, int numero, boolean disponible, double distanciaPantalla, double anguloVision, int calificacion, String vista360) {
-        this.fila = fila;
-        this.numero = numero;
-        this.disponible = disponible;
+    // Constructor
+    public Asiento(String id, double distanciaPantalla, double anguloVision, String nivelConveniencia) {
+        this.id = id;
+        this.ocupado = false;
         this.distanciaPantalla = distanciaPantalla;
         this.anguloVision = anguloVision;
-        this.calificacion = calificacion;
-        this.vista360 = vista360;
+        this.nivelConveniencia = nivelConveniencia;
     }
 
-    public boolean estaDisponible() {
-        return this.disponible;
-    }
+    // --- GETTERS Y SETTERS ---
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public String obtenerCaracteristicas() {
-        return "Fila: " + fila + ", Número: " + numero + ", Distancia: " + distanciaPantalla + "m, Ángulo: " + anguloVision + "°";
-    }
+    public boolean isOcupado() { return ocupado; }
+    public void setOcupado(boolean ocupado) { this.ocupado = ocupado; }
 
-    public int obtenerCalificacion() {
-        return this.calificacion;
-    }
-
-    public String getFila() { return fila; }
-    public int getNumero() { return numero; }
-    public boolean isDisponible() { return disponible; }
     public double getDistanciaPantalla() { return distanciaPantalla; }
+    public void setDistanciaPantalla(double distanciaPantalla) { this.distanciaPantalla = distanciaPantalla; }
+
     public double getAnguloVision() { return anguloVision; }
-    public String getVista360() { return vista360; }
+    public void setAnguloVision(double anguloVision) { this.anguloVision = anguloVision; }
+
+    public String getNivelConveniencia() { return nivelConveniencia; }
+    public void setNivelConveniencia(String nivelConveniencia) { this.nivelConveniencia = nivelConveniencia; }
 }

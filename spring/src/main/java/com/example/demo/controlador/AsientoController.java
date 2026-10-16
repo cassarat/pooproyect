@@ -1,40 +1,33 @@
 package com.example.demo.controlador;
-
 import com.example.demo.modelo.Asiento;
-import com.example.demo.modelo.Sala;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/asientos")
 public class AsientoController {
 
-    private final Sala sala = new Sala();
-    private Asiento asientoSeleccionado;
+    // Simulamos la sala con un mapa (puedes conectarlo a tu clase Sala.java luego)
+    private Map<String, Asiento> salaTemporal = new HashMap<>();
 
-    @GetMapping("/mapa")
-    public List<Asiento> cargarMapa() {
-        return sala.mostrarAsientos();
+    public AsientoController() {
+        // Datos de prueba paea probar
+        salaTemporal.put("A1", new Asiento("A1", 3.5, 45.0, "Media"));
+        salaTemporal.put("C5", new Asiento("C5", 8.0, 0.0, "Alta")); // Mejor asiento
+        salaTemporal.put("F10", new Asiento("F10", 15.0, 30.0, "Baja"));
     }
 
-    @GetMapping("/seleccionar")
-    public String seleccionarAsiento(@RequestParam String fila, @RequestParam int numero) {
-        this.asientoSeleccionado = sala.buscarAsiento(fila, numero);
-        if (this.asientoSeleccionado != null) {
-            return "Asiento seleccionado: " + this.asientoSeleccionado.getFila() + this.asientoSeleccionado.getNumero();
+    // ENDPOINT NUEVO 
+    @GetMapping("/{id}/caracteristicas")
+    public ResponseEntity<Asiento> obtenerCaracteristicas(@PathVariable String id) {
+        Asiento asiento = salaTemporal.get(id.toUpperCase());
+        
+        if (asiento != null) {
+            return ResponseEntity.ok(asiento); // Si lo encuentra, envía los datos 
+        } else {
+            return ResponseEntity.notFound().build(); // Si no, error 404
         }
-        return "Asiento no encontrado";
-    }
-
-    @GetMapping("/caracteristicas")
-    public String consultarCaracteristicas() {
-        if (this.asientoSeleccionado != null) {
-            return this.asientoSeleccionado.obtenerCaracteristicas();
-        }
-        return "Ningún asiento seleccionado.";
     }
 }
