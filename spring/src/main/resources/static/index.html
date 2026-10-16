@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cine - Reserva de Asientos</title>
+    <style>
+        /* Estilos básicos para que el panel se vea bonito */
+        #panel-caracteristicas {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f9f9f9;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
+        }
+        .btn-cerrar {
+            background-color: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mapa de Asientos</h1>
+    
+    <!-- Botones de prueba (En tu proyecto real, estos serán los cuadros de los asientos) -->
+    <button onclick="verCaracteristicas('A1')">Ver Asiento A1</button>
+    <button onclick="verCaracteristicas('C5')">Ver Asiento C5</button>
+    <button onclick="verCaracteristicas('F10')">Ver Asiento F10</button>
+
+    <!-- PANEL DEL REQUISITO DE NATHALIA -->
+    <div id="panel-caracteristicas">
+        <h3 style="margin-top: 0;">Detalles: <span id="lbl-id" style="color: #007bff;"></span></h3>
+        <p><strong>Distancia:</strong> <span id="lbl-distancia"></span> m</p>
+        <p><strong>Ángulo:</strong> <span id="lbl-angulo"></span>°</p>
+        <p><strong>Conveniencia:</strong> <span id="lbl-conveniencia"></span></p>
+        <button class="btn-cerrar" onclick="cerrarPanel()">Cerrar</button>
+    </div>
+
+    <!-- LÓGICA DE JAVASCRIPT -->
+    <script>
+        function verCaracteristicas(idAsiento) {
+            // Llamamos al controlador de Spring Boot
+            fetch(`/api/asientos/${idAsiento}/caracteristicas`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Asiento no encontrado');
+                    return response.json();
+                })
+                .then(data => {
+                    // Llenamos el panel con los datos que llegaron de Java
+                    document.getElementById('lbl-id').textContent = data.id;
+                    document.getElementById('lbl-distancia').textContent = data.distanciaPantalla;
+                    document.getElementById('lbl-angulo').textContent = data.anguloVision;
+                    document.getElementById('lbl-conveniencia').textContent = data.nivelConveniencia;
+
+                    // Mostramos el panel en pantalla
+                    document.getElementById('panel-caracteristicas').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("No se pudieron cargar los datos del asiento.");
+                });
+        }
+
+        function cerrarPanel() {
+            document.getElementById('panel-caracteristicas').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
