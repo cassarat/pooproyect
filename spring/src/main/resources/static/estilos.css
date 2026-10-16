@@ -1,0 +1,21 @@
+/* Estilo compartido por las dos páginas de Joseline. */
+* { box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: #f4f4f9; color: #222; margin: 0; padding: 30px 16px; }
+.contenedor { max-width: 750px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,.12); text-align: center; }
+h1 { font-size: 28px; }
+h2 { font-size: 20px; }
+p { line-height: 1.5; }
+a { color: #0056b3; }
+nav { margin-bottom: 25px; display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; }
+button { padding: 11px 18px; border: 0; border-radius: 5px; background: #007bff; color: white; font-size: 16px; cursor: pointer; }
+button:hover:not(:disabled) { background: #0056b3; }
+button:disabled { background: #ddd; color: #555; cursor: not-allowed; }
+button[aria-pressed="true"] { background: #ffc107; color: #222; outline: 2px solid #856404; }
+:focus-visible { outline: 3px solid #222; outline-offset: 3px; }
+input { width: 80px; padding: 10px; margin: 10px; font-size: 16px; }
+#resultado { margin-top: 25px; }
+.asiento-recomendado { display: inline-block; white-space: pre-line; margin: 8px; padding: 18px; border-radius: 8px; background: #ffc107; color: #222; font-weight: bold; }
+.mensaje { margin-top: 20px; color: #444; }
+.volver { display: inline-block; margin-top: 25px; }
+[hidden] { display: none !important; }
+@media (max-width: 480px) { .contenedor { padding: 16px; } h1 { font-size: 24px; } }

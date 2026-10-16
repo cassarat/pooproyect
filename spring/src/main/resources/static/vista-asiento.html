@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vista desde tu asiento · Cine</title>
+<link rel="stylesheet" href="/estilos.css">
 <link rel="stylesheet" href="/vista-asiento.css"><script src="/vista-asiento.js" defer></script>
 </head>
 <body>
-<header><a href="/">← Mapa de asientos</a><span>CINE / TU EXPERIENCIA</span></header>
-<main><p class="etiqueta">ANTES DE ELEGIR</p><h1>Así verás la pantalla</h1>
+<main class="contenedor">
+<nav aria-label="Navegación"><a href="/">Mapa de asientos</a><a href="/recomendacion.html">Recomendar asientos</a></nav>
+<h1>Vista desde el asiento</h1>
 <p class="introduccion">Explora la vista desde cada asiento disponible.</p>
 <div class="distribucion">
 <section class="panel" aria-labelledby="titulo-asientos">
@@ -22,7 +24,7 @@
 <div id="escenario" class="escenario" role="img" aria-label="Selecciona un asiento para ver la simulación">
 <p id="inicial">Tu vista aparecerá aquí</p>
 <div id="pantalla" hidden><span>CINE</span><small>VISTA PREVIA</small></div>
-<div class="butacas" aria-hidden="true">▰ &nbsp; ▰ &nbsp; ▰ &nbsp; ▰ &nbsp; ▰</div></div>
+</div>
 <p id="estado" role="status" aria-live="polite">Cargando asientos…</p>
 <div id="detalles" hidden><h3 id="descripcion"></h3>
 <dl><div><dt>Asiento</dt><dd id="asiento">—</dd></div><div><dt>Distancia</dt><dd id="distancia">—</dd></div><div><dt>Ángulo</dt><dd id="angulo">—</dd></div></dl></div>

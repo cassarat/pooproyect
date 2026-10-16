@@ -4,20 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recomendación de asientos</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f9; margin: 0; padding: 50px 20px; }
-        .contenedor { max-width: 650px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 14px rgba(0, 0, 0, .12); }
-        input { width: 80px; padding: 10px; margin: 10px; font-size: 16px; }
-        button { padding: 11px 18px; border: 0; border-radius: 7px; background: #6f42c1; color: white; font-size: 16px; cursor: pointer; }
-        button:hover { background: #59359a; }
-        #resultado { margin-top: 25px; }
-        .asiento-recomendado { display: inline-block; white-space: pre-line; margin: 8px; padding: 18px; border-radius: 8px; background: #ffc107; color: #222; font-weight: bold; }
-        .mensaje { margin-top: 20px; color: #444; }
-        .volver { display: inline-block; margin-top: 25px; color: #6f42c1; }
-    </style>
+    <link rel="stylesheet" href="/estilos.css">
 </head>
 <body>
     <main class="contenedor">
+        <nav aria-label="Navegación"><a href="/">Mapa de asientos</a><a href="/vista-asiento.html">Vista desde el asiento</a></nav>
         <h1>Recomendar mejores asientos</h1>
         <p>Indica cuántas personas asistirán. El sistema buscará lugares disponibles, consecutivos y con buena vista.</p>
 
@@ -63,7 +54,7 @@
                     data.asientos.forEach(asiento => {
                         const tarjeta = document.createElement('div');
                         tarjeta.className = 'asiento-recomendado';
-                        tarjeta.innerText = `${asiento.fila}-${asiento.numero}\nDistancia: ${asiento.distanciaPantalla} m\nÁngulo: ${asiento.anguloVision}°\nCalificación: ${asiento.calificacion}/5`;
+                        tarjeta.innerText = `${asiento.fila}-${asiento.numero}\nDistancia: ${asiento.distanciaPantalla} m\nÁngulo: ${asiento.anguloVision}°\nCalificación: ${asiento.nivelConveniencia}/5`;
                         resultado.appendChild(tarjeta);
                     });
                 })
