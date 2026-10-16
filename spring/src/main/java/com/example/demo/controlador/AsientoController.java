@@ -1,33 +1,35 @@
 package com.example.demo.controlador;
+
 import com.example.demo.modelo.Asiento;
+import com.example.demo.modelo.Sala;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/asientos")
 public class AsientoController {
 
-    // Simulamos la sala con un mapa (puedes conectarlo a tu clase Sala.java luego)
-    private Map<String, Asiento> salaTemporal = new HashMap<>();
+    private Sala sala;
 
     public AsientoController() {
-        // Datos de prueba paea probar
-        salaTemporal.put("A1", new Asiento("A1", 3.5, 45.0, "Media"));
-        salaTemporal.put("C5", new Asiento("C5", 8.0, 0.0, "Alta")); // Mejor asiento
-        salaTemporal.put("F10", new Asiento("F10", 15.0, 30.0, "Baja"));
+        // Inicializamos tu sala real para que cargue los asientos A1, A2 y B1
+        this.sala = new Sala();
     }
 
-    // ENDPOINT NUEVO 
+    // ENDPOINT (Requisito Nathalia)
     @GetMapping("/{id}/caracteristicas")
     public ResponseEntity<Asiento> obtenerCaracteristicas(@PathVariable String id) {
-        Asiento asiento = salaTemporal.get(id.toUpperCase());
+        // El frontend manda "A1". Separamos la letra (fila) y el número
+        String fila = id.substring(0, 1).toUpperCase(); 
+        int numero = Integer.parseInt(id.substring(1));
+
+        // Usamos tu método buscarAsiento que está en Sala.java
+        Asiento asiento = sala.buscarAsiento(fila, numero);
         
         if (asiento != null) {
-            return ResponseEntity.ok(asiento); // Si lo encuentra, envía los datos 
+            return ResponseEntity.ok(asiento); // Envía los datos
         } else {
-            return ResponseEntity.notFound().build(); // Si no, error 404
+            return ResponseEntity.notFound().build(); // Error 404 si no existe
         }
     }
 }
