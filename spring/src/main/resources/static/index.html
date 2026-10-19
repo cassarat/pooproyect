@@ -1235,6 +1235,20 @@
                 </div>
             </div>
         </div>
+    <h1>Mapa de Asientos</h1>
+    
+    <!-- Botones de prueba (En tu proyecto real, estos serán los cuadros de los asientos) -->
+    <button onclick="verCaracteristicas('A1')">Ver Asiento A1</button>
+    <button onclick="verCaracteristicas('C5')">Ver Asiento C5</button>
+    <button onclick="verCaracteristicas('F10')">Ver Asiento F10</button>
+
+  
+    <div id="panel-caracteristicas">
+        <h3 style="margin-top: 0;">Detalles: <span id="lbl-id" style="color: #007bff;"></span></h3>
+        <p><strong>Distancia:</strong> <span id="lbl-distancia"></span> m</p>
+        <p><strong>Ángulo:</strong> <span id="lbl-angulo"></span>°</p>
+        <p><strong>Conveniencia:</strong> <span id="lbl-conveniencia"></span></p>
+        <button class="btn-cerrar" onclick="cerrarPanel()">Cerrar</button>
     </div>
 
     <!-- Footer -->

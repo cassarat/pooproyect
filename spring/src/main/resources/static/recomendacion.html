@@ -307,6 +307,32 @@
         Cine Nova &middot; Sistema de Algoritmo y Recomendación de Asientos
     </footer>
 
+    <title>Recomendación de asientos</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f9; margin: 0; padding: 50px 20px; }
+        .contenedor { max-width: 650px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 14px rgba(0, 0, 0, .12); }
+        input { width: 80px; padding: 10px; margin: 10px; font-size: 16px; }
+        button { padding: 11px 18px; border: 0; border-radius: 7px; background: #6f42c1; color: white; font-size: 16px; cursor: pointer; }
+        button:hover { background: #59359a; }
+        #resultado { margin-top: 25px; }
+        .asiento-recomendado { display: inline-block; white-space: pre-line; margin: 8px; padding: 18px; border-radius: 8px; background: #ffc107; color: #222; font-weight: bold; }
+        .mensaje { margin-top: 20px; color: #444; }
+        .volver { display: inline-block; margin-top: 25px; color: #6f42c1; }
+    </style>
+</head>
+<body>
+    <main class="contenedor">
+        <h1>Recomendar mejores asientos</h1>
+        <p>Indica cuántas personas asistirán. El sistema buscará lugares disponibles, consecutivos y con buena vista.</p>
+
+        <label for="cantidad">Cantidad de personas:</label>
+        <input id="cantidad" type="number" min="1" max="8" value="1">
+        <button id="boton-recomendar" type="button">Recomendar</button>
+
+        <div id="resultado" aria-live="polite"></div>
+        <a class="volver" href="/">Volver al mapa de asientos</a>
+    </main>
+
     <script>
         const boton = document.getElementById('boton-recomendar');
         const resultado = document.getElementById('resultado');
@@ -322,6 +348,11 @@
             }
 
             resultado.innerHTML = '<p class="mensaje">Calculando los mejores asientos consecutivos...</p>';
+                resultado.innerHTML = '<p class="mensaje">Ingresa una cantidad válida.</p>';
+                return;
+            }
+
+            resultado.innerHTML = '<p>Buscando los mejores asientos...</p>';
 
             fetch(`/api/recomendaciones/mejores?cantidad=${cantidad}`)
                 .then(response => response.json())
@@ -330,6 +361,7 @@
 
                     if (data.error) {
                         resultado.innerHTML = `<p class="mensaje" style="color: #ef4444;">${data.error}</p>`;
+                        resultado.innerHTML = `<p class="mensaje">${data.error}</p>`;
                         return;
                     }
 
@@ -360,6 +392,15 @@
                 })
                 .catch(() => {
                     resultado.innerHTML = '<p class="mensaje" style="color: #ef4444;">No se pudo conectar con el servicio de recomendación.</p>';
+                    data.asientos.forEach(asiento => {
+                        const tarjeta = document.createElement('div');
+                        tarjeta.className = 'asiento-recomendado';
+                        tarjeta.innerText = `${asiento.fila}-${asiento.numero}\nDistancia: ${asiento.distanciaPantalla} m\nÁngulo: ${asiento.anguloVision}°\nCalificación: ${asiento.calificacion}/5`;
+                        resultado.appendChild(tarjeta);
+                    });
+                })
+                .catch(() => {
+                    resultado.innerHTML = '<p class="mensaje">No se pudo obtener la recomendación.</p>';
                 });
         }
     </script>
