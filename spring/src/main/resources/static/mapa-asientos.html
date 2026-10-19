@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cine Nova - Mapa de Asientos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0a1128;
+            --bg-card: #101f42;
+            --bg-card-hover: #162a5a;
+            --border-subtle: rgba(56, 189, 248, 0.2);
+            --blue-accent: #2563eb;
+            --blue-bright: #38bdf8;
+            --blue-glow: rgba(37, 99, 235, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --seat-available: #1e3a8a;
+            --seat-selected: #0284c7;
+            --seat-occupied: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar */
+        .header-nav {
+            background-color: rgba(10, 17, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, #1d4ed8, #38bdf8);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            color: white;
+            box-shadow: 0 0 15px var(--blue-glow);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .btn-link:hover {
+            color: var(--blue-bright);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            transform: translateY(-1px);
+        }
+
+        /* Contenido Principal */
+        .main-content {
+            flex: 1;
+            max-width: 1000px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        /* Sala y Pantalla */
+        .cinema-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 36px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .screen-container {
+            text-align: center;
+            margin-bottom: 40px;
+            perspective: 500px;
+        }
+
+        .screen-bar {
+            height: 10px;
+            background: linear-gradient(90deg, transparent, #38bdf8, #2563eb, transparent);
+            border-radius: 50%;
+            box-shadow: 0 0 25px #38bdf8;
+            margin: 0 auto 12px;
+            max-width: 600px;
+        }
+
+        .screen-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--blue-bright);
+            font-weight: 600;
+        }
+
+        /* Leyenda */
+        .legend-bar {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-available { background-color: var(--seat-available); border: 1px solid #3b82f6; }
+        .legend-occupied { background-color: var(--seat-occupied); opacity: 0.8; }
+        .legend-selected { background-color: var(--blue-bright); box-shadow: 0 0 8px #38bdf8; }
+
+        /* Botones Rápidos de Prueba (Requisito Original) */
+        .quick-tests {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .quick-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .btn-test {
+            background-color: var(--bg-card);
+            color: var(--blue-bright);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-test:hover {
+            background-color: var(--blue-accent);
+            color: white;
+            border-color: var(--blue-accent);
+        }
+
+        /* Matriz de asientos */
+        .seats-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            overflow-x: auto;
+            padding-bottom: 12px;
+        }
+
+        .seat-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .row-label {
+            width: 24px;
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: right;
+            margin-right: 4px;
+        }
+
+        .seat-button {
+            width: 38px;
+            height: 38px;
+            background-color: var(--seat-available);
+            border: 1px solid #2563eb;
+            color: white;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .seat-button:hover:not(.occupied) {
+            transform: scale(1.1);
+            background-color: #3b82f6;
+            border-color: #60a5fa;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+            z-index: 2;
+        }
+
+        .seat-button.occupied {
+            background-color: var(--seat-occupied);
+            border-color: #b91c1c;
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .seat-button.selected {
+            background-color: var(--blue-bright);
+            border-color: #7dd3fc;
+            color: #0a1128;
+            font-weight: 800;
+            box-shadow: 0 0 12px #38bdf8;
+        }
+
+        /* Panel de Características (Requisito Original Mejorado) */
+        #panel-caracteristicas {
+            display: none;
+            position: fixed;
+            top: 90px;
+            right: 24px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--blue-bright);
+            border-radius: 14px;
+            padding: 24px;
+            width: 300px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.2);
+            font-family: inherit;
+            z-index: 1000;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .panel-id {
+            color: var(--blue-bright);
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        .panel-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Vista 360 preview simulada */
+        .preview-360-container {
+            margin: 16px 0;
+            background: #060b19;
+            border-radius: 8px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .preview-360-label {
+            font-size: 0.75rem;
+            color: var(--blue-bright);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .preview-screen-sim {
+            height: 60px;
+            background: radial-gradient(circle at 50% 120%, rgba(56, 189, 248, 0.4), transparent 70%);
+            border-top: 2px solid var(--blue-bright);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .btn-cerrar {
+            width: 100%;
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 9px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-cerrar:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-subtle);
+            padding: 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <div class="brand-badge">CN</div>
+                <span>Cine Nova</span>
+            </a>
+            <div class="nav-actions">
+                <a href="/" class="btn-link">&larr; Volver a Cartelera</a>
+                <a href="/recomendacion.html" class="btn-link">Recomendador Inteligente</a>
+                <a href="/" class="btn-primary">Comprar Boletos</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Mapa Interactivo de Asientos</h1>
+                <p class="page-subtitle">Haz clic en cualquier asiento para ver sus métricas de visión, conveniencia y vista previa.</p>
+            </div>
+            <a href="/recomendacion.html" class="btn-primary">Buscar Mejores Asientos Consecutivos &rarr;</a>
+        </div>
+
+        <div class="cinema-card">
+            <!-- Pantalla -->
+            <div class="screen-container">
+                <div class="screen-bar"></div>
+                <div class="screen-label">Pantalla Panorámica Cine Nova</div>
+            </div>
+
+            <!-- Leyenda de colores -->
+            <div class="legend-bar">
+                <div class="legend-item">
+                    <div class="legend-color legend-available"></div>
+                    <span>Disponible</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-selected"></div>
+                    <span>Seleccionado</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-occupied"></div>
+                    <span>Ocupado</span>
+                </div>
+            </div>
+
+            <!-- Accesos Rápidos de Prueba (Requisitos Originales) -->
+            <div class="quick-tests">
+                <span class="quick-label">Prueba Rápida de Asientos:</span>
+                <button class="btn-test" onclick="verCaracteristicas('A1')">Ver Asiento A1</button>
+                <button class="btn-test" onclick="verCaracteristicas('C5')">Ver Asiento C5</button>
+                <button class="btn-test" onclick="verCaracteristicas('F10')">Ver Asiento F10</button>
+            </div>
+
+            <!-- Matriz de asientos -->
+            <div id="grid-asientos" class="seats-grid">
+                <p style="color: var(--text-secondary); padding: 20px;">Cargando distribución de la sala...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Panel de Características Flotante -->
+    <div id="panel-caracteristicas" role="dialog" aria-labelledby="lbl-id">
+        <div class="panel-header">
+            <span class="panel-title">Detalles del Asiento</span>
+            <span id="lbl-id" class="panel-id">A1</span>
+        </div>
+
+        <div class="panel-detail-row">
+            <span class="detail-label">Distancia a Pantalla</span>
+            <span class="detail-value"><span id="lbl-distancia"></span> m</span>
+        </div>
+        <div class="panel-detail-row">
+            <span class="detail-label">Ángulo de Visión</span>
+            <span class="detail-value"><span id="lbl-angulo"></span>°</span>
+        </div>
+        <div class="panel-detail-row">
+            <span class="detail-label">Nivel de Conveniencia</span>
+            <span class="detail-value"><span id="lbl-conveniencia"></span> / 5</span>
+        </div>
+        <div class="panel-detail-row">
+            <span class="detail-label">Disponibilidad</span>
+            <span id="lbl-estado" class="detail-value">Disponible</span>
+        </div>
+
+        <div class="preview-360-container">
+            <div class="preview-360-label">Perspectiva Virtual 360°</div>
+            <div class="preview-screen-sim">
+                <span id="lbl-simulacion">Vista centrada hacia la pantalla</span>
+            </div>
+        </div>
+
+        <button class="btn-cerrar" onclick="cerrarPanel()">Cerrar Panel</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        Cine Nova &middot; Sistema de Gestión de Asientos y Cartelera Cinematográfica
+    </footer>
+
+    <!-- LÓGICA DE JAVASCRIPT -->
+    <script>
+        let asientoSeleccionadoId = null;
+
+        function verCaracteristicas(idAsiento) {
+            fetch(`/api/asientos/${idAsiento}/caracteristicas`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Asiento no encontrado');
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('lbl-id').textContent = data.id;
+                    document.getElementById('lbl-distancia').textContent = data.distanciaPantalla;
+                    document.getElementById('lbl-angulo').textContent = data.anguloVision;
+                    document.getElementById('lbl-conveniencia').textContent = data.nivelConveniencia || data.calificacion;
+                    
+                    const estadoEl = document.getElementById('lbl-estado');
+                    if (data.disponible) {
+                        estadoEl.textContent = 'Disponible';
+                        estadoEl.style.color = '#38bdf8';
+                    } else {
+                        estadoEl.textContent = 'Ocupado';
+                        estadoEl.style.color = '#ef4444';
+                    }
+
+                    const simEl = document.getElementById('lbl-simulacion');
+                    if (data.distanciaPantalla < 4) {
+                        simEl.textContent = `Inmersión frontal cercana (${data.distanciaPantalla}m, ${data.anguloVision}°)`;
+                    } else if (data.distanciaPantalla > 7) {
+                        simEl.textContent = `Vista panorámica trasera (${data.distanciaPantalla}m, ${data.anguloVision}°)`;
+                    } else {
+                        simEl.textContent = `Punto óptimo central (${data.distanciaPantalla}m, ${data.anguloVision}°)`;
+                    }
+
+                    // Resaltar en mapa
+                    document.querySelectorAll('.seat-button').forEach(btn => {
+                        btn.classList.remove('selected');
+                        if (btn.getAttribute('data-id') === data.id) {
+                            btn.classList.add('selected');
+                        }
+                    });
+
+                    // Mostrar panel
+                    document.getElementById('panel-caracteristicas').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("No se pudieron cargar los datos del asiento.");
+                });
+        }
+
+        function cerrarPanel() {
+            document.getElementById('panel-caracteristicas').style.display = 'none';
+            document.querySelectorAll('.seat-button').forEach(btn => btn.classList.remove('selected'));
+        }
+
+        function cargarMapa() {
+            fetch('/api/asientos')
+                .then(res => res.json())
+                .then(asientos => {
+                    const grid = document.getElementById('grid-asientos');
+                    grid.innerHTML = '';
+
+                    const filasMap = {};
+                    asientos.forEach(a => {
+                        if (!filasMap[a.fila]) filasMap[a.fila] = [];
+                        filasMap[a.fila].push(a);
+                    });
+
+                    Object.keys(filasMap).sort().forEach(filaKey => {
+                        const rowDiv = document.createElement('div');
+                        rowDiv.className = 'seat-row';
+
+                        const lbl = document.createElement('div');
+                        lbl.className = 'row-label';
+                        lbl.textContent = filaKey;
+                        rowDiv.appendChild(lbl);
+
+                        filasMap[filaKey].sort((a,b) => a.numero - b.numero).forEach(a => {
+                            const btn = document.createElement('button');
+                            btn.className = 'seat-button' + (a.disponible ? '' : ' occupied');
+                            btn.textContent = a.numero;
+                            btn.setAttribute('data-id', a.id);
+                            btn.title = `Asiento ${a.id}: ${a.distanciaPantalla}m | ${a.anguloVision}° | Conveniencia: ${a.nivelConveniencia}/5`;
+                            btn.onclick = () => verCaracteristicas(a.id);
+                            rowDiv.appendChild(btn);
+                        });
+
+                        grid.appendChild(rowDiv);
+                    });
+                })
+                .catch(err => {
+                    console.error("Error cargando mapa:", err);
+                    document.getElementById('grid-asientos').innerHTML = '<p style="color: #ef4444;">Error al cargar los asientos de la sala.</p>';
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarMapa);
+    </script>
+</body>
+</html>
