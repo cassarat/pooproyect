@@ -3,6 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cine Nova  Recomendación de Asientos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0a1128;
+            --bg-card: #101f42;
+            --border-subtle: rgba(56, 189, 248, 0.2);
+            --blue-accent: #2563eb;
+            --blue-bright: #38bdf8;
+            --blue-glow: rgba(37, 99, 235, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-nav {
+            background-color: rgba(10, 17, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .brand-badge {
+            background: linear-gradient(135deg, #1d4ed8, #38bdf8);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            color: white;
+            box-shadow: 0 0 15px var(--blue-glow);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .btn-link:hover {
+            color: var(--blue-bright);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .main-container {
+            flex: 1;
+            max-width: 700px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            padding: 36px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .card h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .card p.desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .form-row label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .input-number {
+            width: 90px;
+            padding: 10px 14px;
+            background: #060b19;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            text-align: center;
+            font-weight: 700;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .input-number:focus {
+            border-color: var(--blue-bright);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-recomendar {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 12px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            font-family: inherit;
+        }
+
+        .btn-recomendar:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            transform: translateY(-1px);
+        }
+
+        #resultado {
+            margin-top: 24px;
+            min-height: 80px;
+        }
+
+        .mensaje {
+            margin-top: 15px;
+            color: var(--blue-bright);
+            font-weight: 500;
+            font-size: 1.05rem;
+        }
+
+        .seats-container {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .asiento-tarjeta {
+            background: linear-gradient(145deg, #162a5a, #101f42);
+            border: 1px solid var(--blue-bright);
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: var(--text-primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(56, 189, 248, 0.2);
+            text-align: left;
+            min-width: 150px;
+        }
+
+        .asiento-id {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--blue-bright);
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 4px;
+        }
+
+        .asiento-stat {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 4px 0;
+        }
+
+        .asiento-stat strong {
+            color: var(--text-primary);
+        }
+
+        .volver {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--blue-bright);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .volver:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-subtle);
+            padding: 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-nav">
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <div class="brand-badge">CN</div>
+                <span>Cine Nova</span>
+            </a>
+            <div class="nav-actions">
+                <a href="/" class="btn-link">Cartelera</a>
+                <a href="/mapa-asientos.html" class="btn-link">Mapa de Asientos</a>
+                <a href="/" class="btn-primary">Comprar Boletos</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="card">
+            <h1>Recomendación Inteligente de Asientos</h1>
+            <p class="desc">Indica la cantidad de personas. El algoritmo analizará distancia a pantalla, ángulo de visión y conveniencia para sugerir los mejores asientos consecutivos disponibles.</p>
+
+            <div class="form-row">
+                <label for="cantidad">Cantidad de personas:</label>
+                <input id="cantidad" class="input-number" type="number" min="1" max="8" value="2">
+                <button id="boton-recomendar" class="btn-recomendar" type="button">Buscar Asientos</button>
+            </div>
+
+            <div id="resultado" aria-live="polite"></div>
+
+            <div style="display: flex; justify-content: center; gap: 20px;">
+                <a class="volver" href="/mapa-asientos.html">&larr; Ver Mapa Completo de Sala</a>
+                <a class="volver" href="/">Volver a la Cartelera &rarr;</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        Cine Nova &middot; Sistema de Algoritmo y Recomendación de Asientos
+    </footer>
+
     <title>Recomendación de asientos</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f9; margin: 0; padding: 50px 20px; }
@@ -39,6 +343,11 @@
             const cantidad = Number(document.getElementById('cantidad').value);
 
             if (!Number.isInteger(cantidad) || cantidad < 1) {
+                resultado.innerHTML = '<p class="mensaje" style="color: #ef4444;">Ingresa una cantidad válida mayor a cero.</p>';
+                return;
+            }
+
+            resultado.innerHTML = '<p class="mensaje">Calculando los mejores asientos consecutivos...</p>';
                 resultado.innerHTML = '<p class="mensaje">Ingresa una cantidad válida.</p>';
                 return;
             }
@@ -51,6 +360,7 @@
                     resultado.innerHTML = '';
 
                     if (data.error) {
+                        resultado.innerHTML = `<p class="mensaje" style="color: #ef4444;">${data.error}</p>`;
                         resultado.innerHTML = `<p class="mensaje">${data.error}</p>`;
                         return;
                     }
@@ -60,6 +370,28 @@
                     mensaje.innerText = data.mensaje;
                     resultado.appendChild(mensaje);
 
+                    if (data.asientos && data.asientos.length > 0) {
+                        const contenedor = document.createElement('div');
+                        contenedor.className = 'seats-container';
+
+                        data.asientos.forEach(asiento => {
+                            const tarjeta = document.createElement('div');
+                            tarjeta.className = 'asiento-tarjeta';
+                            const calif = asiento.calificacion ?? asiento.nivelConveniencia ?? 5;
+                            tarjeta.innerHTML = `
+                                <div class="asiento-id">${asiento.fila}-${asiento.numero}</div>
+                                <div class="asiento-stat">Distancia: <strong>${asiento.distanciaPantalla} m</strong></div>
+                                <div class="asiento-stat">Ángulo: <strong>${asiento.anguloVision}°</strong></div>
+                                <div class="asiento-stat">Conveniencia: <strong>${calif}/5</strong></div>
+                            `;
+                            contenedor.appendChild(tarjeta);
+                        });
+
+                        resultado.appendChild(contenedor);
+                    }
+                })
+                .catch(() => {
+                    resultado.innerHTML = '<p class="mensaje" style="color: #ef4444;">No se pudo conectar con el servicio de recomendación.</p>';
                     data.asientos.forEach(asiento => {
                         const tarjeta = document.createElement('div');
                         tarjeta.className = 'asiento-recomendado';
