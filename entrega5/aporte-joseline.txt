@@ -1,0 +1,80 @@
+APORTE DE JOSELINE — QUINTA ENTREGA
+Nombre: Joseline Mishel Mazariegos Lacán
+Carné: 261742
+
+REQUISITOS FUNCIONALES IMPLEMENTADOS
+
+Antecedente verificado en el repositorio: mi rama ya contenía la consulta de asientos y una simulación de la pantalla según la distancia y el ángulo del asiento. Esta funcionalidad permite elegir asientos disponibles, muestra sus datos y rechaza la consulta de asientos ocupados o inexistentes. Es una simulación orientativa; no es una fotografía ni una vista 360°. La entrega anterior exacta debe confirmarse con el informe de la cuarta entrega.
+
+En esta entrega se agregó la clase Usuario y la búsqueda de usuarios por nombre mediante UsuarioService. También se implementó la autenticación y el controlador UsuarioController para iniciar sesión, consultar el usuario de la sesión y cerrarla. Se agregó una página de inicio de sesión que muestra mensajes cuando faltan datos o las credenciales son incorrectas. La contraseña se verifica mediante una clave derivada y no se devuelve al navegador.
+
+Además, se integró la vista de asientos con la versión actual del proyecto del equipo y se ajustaron sus pruebas para la sala de 70 asientos. Las páginas de inicio de sesión y vista desde el asiento son accesibles desde la navegación principal.
+
+Prioridad alta: buscar y autenticar usuarios; gestionar el inicio y cierre de sesión.
+Prioridad alta: consultar y simular la vista desde un asiento disponible.
+
+ALCANCE Y PENDIENTES
+
+La cuenta de demostración se mantiene en memoria y se vuelve a crear al iniciar el servidor. Este aporte no incluye registro de cuentas ni integración de usuarios con SQLite. El inicio de sesión identifica al usuario, pero no restringe el acceso a las páginas públicas del cine. La simulación de asientos no reserva lugares ni implementa una vista panorámica real. No se afirma que el sistema completo alcance el 95 % sin contrastar los requisitos originales del equipo.
+
+PLANIFICACIÓN PROPUESTA — ESTIMACIONES, NO HORAS REALES
+Responsable de todas las tareas: Joseline Mishel Mazariegos Lacán.
+Fecha propuesta de terminación: 8 de noviembre de 2026.
+
+Tarea 1: Clase Usuario y búsqueda de usuarios.
+Descripción: representar el nombre del usuario y su nombre completo; buscar una cuenta por nombre y verificar la contraseña sin exponerla.
+Tiempo estimado: 1.5 horas. Prioridad: alta.
+
+Tarea 2: Controlador del usuario e inicio de sesión.
+Descripción: recibir credenciales, validar los datos, iniciar una sesión, consultar la cuenta actual y cerrar la sesión; conectar estos métodos con un formulario sencillo.
+Tiempo estimado: 2 horas. Prioridad: alta.
+
+Tarea 3: Integración y revisión de la vista desde los asientos.
+Descripción: conectar las páginas con la navegación actual del cine y comprobar la consulta de asientos disponibles, ocupados e inexistentes con la sala actualizada.
+Tiempo estimado: 1 hora. Prioridad: alta.
+
+Tarea 4: Pruebas y documentación.
+Descripción: probar búsqueda, credenciales válidas e inválidas, sesiones y vista de asientos; preparar el aporte escrito y publicarlo en la rama del repositorio.
+Tiempo estimado: 1 hora. Prioridad: alta.
+
+Calendario propuesto: tareas 1, 2, 3 y 4 — 8 de noviembre de 2026, en ese orden.
+Total estimado: 5.5 horas.
+La demostración a usuarios y su grabación deben coordinarse con el equipo; no se registran aquí como actividades realizadas.
+
+REFLEXIÓN — BORRADOR PARA REVISAR ANTES DE PEGAR
+
+Una dificultad técnica fue integrar mi parte con los cambios recientes de la página principal y de la sala. Para resolverla, se conservaron los cambios del equipo, se agregaron los enlaces a mis páginas y se ajustaron las pruebas a la nueva distribución de asientos. También fue necesario distinguir entre mostrar un formulario y autenticar realmente a un usuario: el controlador verifica las credenciales y guarda la identidad en una sesión. Esta implementación permite explicar cómo se conectan el modelo, el servicio, el controlador y la página web.
+
+Este párrafo describe cambios verificables del código. Agregar personalmente las lecciones y dificultades de las entregas anteriores; no se proporcionaron datos para reconstruir esas experiencias.
+
+GESTIÓN DEL TIEMPO — COMPLETAR CON DATOS REALES
+Nombre: Joseline Mishel Mazariegos Lacán. Carné: 261742.
+Fecha | Inicio | Fin | Interrupción (min) | Tiempo trabajado (min) | Tarea | Comentarios
+[fecha real] | [hora] | [hora] | [minutos] | [minutos] | Clase Usuario y búsqueda | [comentario real]
+[fecha real] | [hora] | [hora] | [minutos] | [minutos] | Autenticación y controlador | [comentario real]
+[fecha real] | [hora] | [hora] | [minutos] | [minutos] | Integración de la vista de asientos | [comentario real]
+[fecha real] | [hora] | [hora] | [minutos] | [minutos] | Pruebas y documentación | [comentario real]
+Tiempo trabajado = (Fin - Inicio) - Interrupción, expresado en minutos.
+No sustituir estos espacios con las horas estimadas de planificación.
+
+GUÍA PARA EXPLICAR EL CÓDIGO
+
+Usuario: representa una cuenta. Sus atributos son privados; sus métodos públicos permiten leer el nombre y comprobar una contraseña. La sal es un valor aleatorio y PBKDF2 transforma la contraseña antes de compararla; esta es la parte de seguridad de Java.
+UsuarioService: conserva una lista de cuentas de demostración. buscarUsuario recorre la lista y compara el nombre sin distinguir mayúsculas. autenticar busca la cuenta y pide al objeto Usuario que compruebe la contraseña.
+UsuarioController: recibe las peticiones del formulario. POST /api/usuarios/login inicia la sesión; GET /api/usuarios/actual consulta quién inició sesión; POST /api/usuarios/logout la cierra. La contraseña nunca se incluye en la respuesta.
+login.js: envía los datos del formulario al controlador y muestra el resultado.
+Sala: contiene los asientos del cine.
+VistaAsientoService: calcula tamaño, desplazamiento e inclinación de una pantalla simulada a partir de la distancia y el ángulo.
+VistaAsientoController: busca el asiento en la sala compartida y valida si se puede mostrar su vista.
+
+PRUEBA MANUAL
+1. Desde la carpeta spring, ejecutar: sh mvnw spring-boot:run
+2. Abrir http://localhost:8080/login.html
+3. Cuenta local de demostración: joseline / Cine2026!
+4. Probar contraseña incorrecta, luego la correcta. Recargar para comprobar que la sesión continúa; cerrar sesión para terminarla.
+5. Abrir http://localhost:8080/vista-asiento.html y comparar A1 con G5: cambian distancia, ángulo y tamaño de la pantalla.
+6. Las pruebas automáticas se ejecutan con: sh mvnw test
+Resultado verificado: 15 pruebas, 0 fallos y 0 errores, incluidas búsqueda, autenticación, sesión y vista de asientos.
+
+AUTOEVALUACIÓN — DATOS QUE DEBES COMPLETAR
+El mensaje de la líder pide enviar la autoevaluación. No se adjuntó el formulario o la escala, por lo que no se inventa una nota. Usa los aportes verificables anteriores como evidencia y completa personalmente la valoración de participación, cumplimiento y conocimiento del código.
