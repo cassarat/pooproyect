@@ -25,7 +25,7 @@ public class RecomendadorAsientos {
         }
 
         List<Asiento> ordenados = asientos.stream()
-                .filter(asiento -> asiento != null && asiento.estaDisponible())
+                .filter(asiento -> asiento != null && asiento.isDisponible())
                 .sorted(
                         Comparator.comparing(Asiento::getFila)
                                 .thenComparingInt(Asiento::getNumero)
@@ -78,7 +78,7 @@ public class RecomendadorAsientos {
         double puntaje = 0;
 
         for (Asiento asiento : grupo) {
-            puntaje += asiento.obtenerCalificacion() * 100;
+            puntaje += asiento.getNivelConveniencia() * 100;
             puntaje -= Math.abs(asiento.getAnguloVision() - 45.0) * 2;
             puntaje -= Math.abs(asiento.getDistanciaPantalla() - 6.5);
         }
