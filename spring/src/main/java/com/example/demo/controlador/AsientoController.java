@@ -5,6 +5,8 @@ import com.example.demo.modelo.Sala;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/asientos")
 public class AsientoController {
@@ -15,20 +17,25 @@ public class AsientoController {
         this.sala = sala;
     }
 
-    // ENDPOINT (Requisito Nathalia)
+    // --- NUEVO ENDPOINT: Devuelve TODOS los asientos para dibujar el mapa ---
+    @GetMapping
+    public ResponseEntity<List<Asiento>> obtenerTodosLosAsientos() {
+        // Usa el método mostrarAsientos() de tu clase Sala
+        return ResponseEntity.ok(sala.mostrarAsientos());
+    }
+
+    // --- ENDPOINT ANTERIOR: Devuelve detalles de un asiento (Requisito Nathalia) ---
     @GetMapping("/{id}/caracteristicas")
     public ResponseEntity<Asiento> obtenerCaracteristicas(@PathVariable String id) {
-        // El frontend manda "A1". Separamos la letra (fila) y el número
         String fila = id.substring(0, 1).toUpperCase(); 
         int numero = Integer.parseInt(id.substring(1));
 
-        // Usamos tu método buscarAsiento que está en Sala.java
         Asiento asiento = sala.buscarAsiento(fila, numero);
         
         if (asiento != null) {
-            return ResponseEntity.ok(asiento); // Envía los datos
+            return ResponseEntity.ok(asiento);
         } else {
-            return ResponseEntity.notFound().build(); // Error 404 si no existe
+            return ResponseEntity.notFound().build();
         }
     }
 }

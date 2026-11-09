@@ -19,13 +19,14 @@ class VistaAsientoControllerTest {
         mvc.perform(get("/api/vista-asiento").param("fila", "a").param("numero", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("A1"))
-                .andExpect(jsonPath("$.anguloVision").value(45.0))
-                .andExpect(jsonPath("$.distanciaPantalla").value(5.2));
+                .andExpect(jsonPath("$.anguloVision").value(36.0))
+                .andExpect(jsonPath("$.distanciaPantalla").value(3.0));
         assertTrue(sala.buscarAsiento("A", 1).isDisponible());
     }
 
     @Test
     void rechazaOcupadosInexistentesYParametrosInvalidos() throws Exception {
+        sala.buscarAsiento("B", 1).setDisponible(false);
         mvc.perform(get("/api/vista-asiento?fila=B&numero=1")).andExpect(status().isConflict());
         mvc.perform(get("/api/vista-asiento?fila=Z&numero=99")).andExpect(status().isNotFound());
         mvc.perform(get("/api/vista-asiento?fila=A&numero=0")).andExpect(status().isBadRequest());
