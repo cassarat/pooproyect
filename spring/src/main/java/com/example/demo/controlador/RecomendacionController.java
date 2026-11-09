@@ -18,9 +18,9 @@ public class RecomendacionController {
     private final RecomendadorAsientos recomendador;
     private final Sala sala;
 
-    public RecomendacionController(RecomendadorAsientos recomendador) {
+    public RecomendacionController(RecomendadorAsientos recomendador, Sala sala) {
         this.recomendador = recomendador;
-        this.sala = new Sala();
+        this.sala = sala;
     }
 
     @GetMapping("/mejores")

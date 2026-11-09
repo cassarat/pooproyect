@@ -11,10 +11,10 @@ import java.util.List;
 @RequestMapping("/api/asientos")
 public class AsientoController {
 
-    private Sala sala;
+    private final Sala sala;
 
-    public AsientoController() {
-        this.sala = new Sala();
+    public AsientoController(Sala sala) {
+        this.sala = sala;
     }
 
     // --- NUEVO ENDPOINT: Devuelve TODOS los asientos para dibujar el mapa ---
