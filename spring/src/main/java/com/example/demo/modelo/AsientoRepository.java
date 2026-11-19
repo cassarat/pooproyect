@@ -1,6 +1,5 @@
-package com.example.demo.modelo.repositorio;
+package com.example.demo.modelo;
 
-import com.example.demo.modelo.Asiento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

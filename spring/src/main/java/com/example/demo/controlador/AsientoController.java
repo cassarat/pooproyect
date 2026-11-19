@@ -1,29 +1,41 @@
 package com.example.demo.controlador;
 
 import com.example.demo.modelo.Asiento;
-import com.example.demo.modelo.repositorio.AsientoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.modelo.Sala;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/asientos")
-@CrossOrigin(origins = "*") // Permite peticiones desde la interfaz HTML
 public class AsientoController {
 
-    @Autowired
-    private AsientoRepository asientoRepository;
+    private final Sala sala;
 
-    // Retorna todos los asientos insertados en la base de datos
-    @GetMapping
-    public List<Asiento> obtenerTodos() {
-        return asientoRepository.findAll();
+    public AsientoController(Sala sala) {
+        this.sala = sala;
     }
 
-    // Retorna un asiento específico por su ID (ej. "A1", "C5", "F10")
-    @GetMapping("/{id}")
-    public Asiento obtenerPorId(@PathVariable String id) {
-        return asientoRepository.findById(id).orElse(null);
+    // --- NUEVO ENDPOINT: Devuelve TODOS los asientos para dibujar el mapa ---
+    @GetMapping
+    public ResponseEntity<List<Asiento>> obtenerTodosLosAsientos() {
+        // Usa el método mostrarAsientos() de tu clase Sala
+        return ResponseEntity.ok(sala.mostrarAsientos());
+    }
+
+    // --- ENDPOINT ANTERIOR: Devuelve detalles de un asiento (Requisito Nathalia) ---
+    @GetMapping("/{id}/caracteristicas")
+    public ResponseEntity<Asiento> obtenerCaracteristicas(@PathVariable String id) {
+        String fila = id.substring(0, 1).toUpperCase(); 
+        int numero = Integer.parseInt(id.substring(1));
+
+        Asiento asiento = sala.buscarAsiento(fila, numero);
+        
+        if (asiento != null) {
+            return ResponseEntity.ok(asiento);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
