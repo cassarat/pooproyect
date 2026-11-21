@@ -14,9 +14,9 @@ public class RecomendadorAsientos {
             List<Asiento> asientos,
             int cantidadPersonas
     ) {
-        if (cantidadPersonas <= 0) {
+        if (cantidadPersonas <= 0 || cantidadPersonas > 10) {
             throw new IllegalArgumentException(
-                    "La cantidad de personas debe ser mayor que cero."
+                    "La cantidad de personas debe estar entre 1 y 10."
             );
         }
 
@@ -79,7 +79,8 @@ public class RecomendadorAsientos {
 
         for (Asiento asiento : grupo) {
             puntaje += asiento.getNivelConveniencia() * 100;
-            puntaje -= Math.abs(asiento.getAnguloVision() - 45.0) * 2;
+            // La sala y la simulación usan 0 grados como vista frontal.
+            puntaje -= Math.abs(asiento.getAnguloVision()) * 2;
             puntaje -= Math.abs(asiento.getDistanciaPantalla() - 6.5);
         }
 

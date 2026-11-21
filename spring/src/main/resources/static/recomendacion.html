@@ -265,6 +265,11 @@
             color: var(--text-muted);
             font-size: 0.85rem;
         }
+
+        @media (max-width: 640px) {
+            .header-container, .nav-actions { flex-wrap: wrap; gap: 12px; }
+            .card { padding: 24px 16px; }
+        }
     </style>
 </head>
 <body>
@@ -286,13 +291,23 @@
     <main class="main-container">
         <div class="card">
             <h1>Recomendación Inteligente de Asientos</h1>
-            <p class="desc">Indica la cantidad de personas. El algoritmo analizará distancia a pantalla, ángulo de visión y conveniencia para sugerir los mejores asientos consecutivos disponibles.</p>
+            <p class="desc">Elige la película, la cantidad de personas y un presupuesto total opcional. Buscaremos lugares consecutivos en la misma fila, excluyendo los ocupados.</p>
 
-            <div class="form-row">
-                <label for="cantidad">Cantidad de personas:</label>
-                <input id="cantidad" class="input-number" type="number" min="1" max="8" value="2">
-                <button id="boton-recomendar" class="btn-recomendar" type="button">Buscar Asientos</button>
-            </div>
+            <form id="formulario-recomendacion">
+                <div class="form-row">
+                    <label for="pelicula">Película:</label>
+                    <select id="pelicula" class="input-number" style="width:100%;max-width:420px" required>
+                        <option value="">Cargando cartelera...</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="cantidad">Cantidad de personas:</label>
+                    <input id="cantidad" class="input-number" type="number" min="1" max="10" step="1" value="2" required>
+                    <label for="presupuesto">Presupuesto total (USD):</label>
+                    <input id="presupuesto" class="input-number" style="width:150px" type="number" min="0" step="0.01" placeholder="Sin límite">
+                    <button id="boton-recomendar" class="btn-recomendar" type="submit" disabled>Buscar Asientos</button>
+                </div>
+            </form>
 
             <div id="resultado" aria-live="polite"></div>
 
@@ -307,94 +322,6 @@
         Cine Nova &middot; Sistema de Algoritmo y Recomendación de Asientos
     </footer>
 
-    <title>Recomendación de asientos</title>
-    <link rel="stylesheet" href="/estilos.css">
-</head>
-<body>
-    <main class="contenedor">
-        <nav aria-label="Navegación"><a href="/">Mapa de asientos</a><a href="/vista-asiento.html">Vista desde el asiento</a></nav>
-        <h1>Recomendar mejores asientos</h1>
-        <p>Indica cuántas personas asistirán. El sistema buscará lugares disponibles, consecutivos y con buena vista.</p>
-
-        <label for="cantidad">Cantidad de personas:</label>
-        <input id="cantidad" type="number" min="1" max="8" value="1">
-        <button id="boton-recomendar" type="button">Recomendar</button>
-
-        <div id="resultado" aria-live="polite"></div>
-        <a class="volver" href="/">Volver al mapa de asientos</a>
-    </main>
- 
-    <script>
-    {
-        const boton = document.getElementById('boton-recomendar');
-        const resultado = document.getElementById('resultado');
-
-        boton.addEventListener('click', buscarRecomendacion);
-
-        function buscarRecomendacion() {
-            const cantidad = Number(document.getElementById('cantidad').value);
-
-            if (!Number.isInteger(cantidad) || cantidad < 1) {
-                resultado.innerHTML = '<p class="mensaje" style="color: #ef4444;">Ingresa una cantidad válida mayor a cero.</p>';
-                return;
-            }
-
-            resultado.innerHTML = '<p class="mensaje">Calculando los mejores asientos consecutivos...</p>';
-                resultado.innerHTML = '<p class="mensaje">Ingresa una cantidad válida.</p>';
-                return;
-            }
-
-            resultado.innerHTML = '<p>Buscando los mejores asientos...</p>';
-
-            fetch(`/api/recomendaciones/mejores?cantidad=${cantidad}`)
-                .then(response => response.json())
-                .then(data => {
-                    resultado.innerHTML = '';
-
-                    if (data.error) {
-                        resultado.innerHTML = `<p class="mensaje" style="color: #ef4444;">${data.error}</p>`;
-                        resultado.innerHTML = `<p class="mensaje">${data.error}</p>`;
-                        return;
-                    }
-
-                    const mensaje = document.createElement('p');
-                    mensaje.className = 'mensaje';
-                    mensaje.innerText = data.mensaje;
-                    resultado.appendChild(mensaje);
-
-                    if (data.asientos && data.asientos.length > 0) {
-                        const contenedor = document.createElement('div');
-                        contenedor.className = 'seats-container';
-
-                        data.asientos.forEach(asiento => {
-                            const tarjeta = document.createElement('div');
-                            tarjeta.className = 'asiento-tarjeta';
-                            const calif = asiento.calificacion ?? asiento.nivelConveniencia ?? 5;
-                            tarjeta.innerHTML = `
-                                <div class="asiento-id">${asiento.fila}-${asiento.numero}</div>
-                                <div class="asiento-stat">Distancia: <strong>${asiento.distanciaPantalla} m</strong></div>
-                                <div class="asiento-stat">Ángulo: <strong>${asiento.anguloVision}°</strong></div>
-                                <div class="asiento-stat">Conveniencia: <strong>${calif}/5</strong></div>
-                            `;
-                            contenedor.appendChild(tarjeta);
-                        });
-
-                        resultado.appendChild(contenedor);
-                    }
-                })
-                .catch(() => {
-                    resultado.innerHTML = '<p class="mensaje" style="color: #ef4444;">No se pudo conectar con el servicio de recomendación.</p>';
-                    data.asientos.forEach(asiento => {
-                        const tarjeta = document.createElement('div');
-                        tarjeta.className = 'asiento-recomendado';
-                        tarjeta.innerText = `${asiento.fila}-${asiento.numero}\nDistancia: ${asiento.distanciaPantalla} m\nÁngulo: ${asiento.anguloVision}°\nCalificación: ${asiento.nivelConveniencia}/5`;
-                        resultado.appendChild(tarjeta);
-                    });
-                })
-                .catch(() => {
-                    resultado.innerHTML = '<p class="mensaje">No se pudo obtener la recomendación.</p>';
-                });
-        }
-    </script>
+    <script src="/recomendacion.js" defer></script>
 </body>
 </html>

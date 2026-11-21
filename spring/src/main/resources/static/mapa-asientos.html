@@ -258,6 +258,8 @@
         }
 
         .seat-row {
+            width: max-content;
+            margin: 0 auto;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -422,6 +424,15 @@
             color: white;
         }
 
+        .seat-button:disabled { cursor: not-allowed; opacity: 0.8; }
+
+        @media (max-width: 640px) {
+            .header-container, .nav-actions, .page-header { flex-wrap: wrap; gap: 12px; }
+            .cinema-card { padding: 22px 12px; }
+            .seats-grid { align-items: stretch; }
+            #panel-caracteristicas { right: 12px; width: min(300px, calc(100vw - 24px)); }
+        }
+
         .footer {
             margin-top: auto;
             border-top: 1px solid var(--border-subtle);
@@ -454,7 +465,7 @@
         <div class="page-header">
             <div>
                 <h1 class="page-title">Mapa Interactivo de Asientos</h1>
-                <p class="page-subtitle">Haz clic en cualquier asiento para ver sus métricas de visión, conveniencia y vista previa.</p>
+                <p class="page-subtitle">Selecciona uno o varios asientos libres. Los ocupados aparecen en rojo y no se pueden elegir.</p>
             </div>
             <a href="/recomendacion.html" class="btn-primary">Buscar Mejores Asientos Consecutivos &rarr;</a>
         </div>
@@ -490,6 +501,15 @@
                 <button class="btn-test" onclick="verCaracteristicas('F10')">Ver Asiento F10</button>
             </div>
 
+            <div class="quick-tests" style="flex-wrap:wrap">
+                <p id="estado-sala" role="status">Consultando disponibilidad...</p>
+                <button type="button" id="actualizar-mapa" class="btn-test">Actualizar disponibilidad</button>
+            </div>
+            <div class="quick-tests" style="flex-wrap:wrap">
+                <p id="seleccion-resumen" role="status">Elige asientos disponibles.</p>
+                <button type="button" id="limpiar-seleccion" class="btn-test">Limpiar selección</button>
+                <button type="button" id="continuar-compra" class="btn-primary" disabled>Continuar a boletos</button>
+            </div>
             <!-- Matriz de asientos -->
             <div id="grid-asientos" class="seats-grid">
                 <p style="color: var(--text-secondary); padding: 20px;">Cargando distribución de la sala...</p>
@@ -522,7 +542,7 @@
         </div>
 
         <div class="preview-360-container">
-            <div class="preview-360-label">Perspectiva Virtual 360°</div>
+            <div class="preview-360-label">Vista orientativa del asiento</div>
             <div class="preview-screen-sim">
                 <span id="lbl-simulacion">Vista centrada hacia la pantalla</span>
             </div>
@@ -536,104 +556,6 @@
         Cine Nova &middot; Sistema de Gestión de Asientos y Cartelera Cinematográfica
     </footer>
 
-    <!-- LÓGICA DE JAVASCRIPT -->
-    <script>
-        let asientoSeleccionadoId = null;
-
-        function verCaracteristicas(idAsiento) {
-            fetch(`/api/asientos/${idAsiento}/caracteristicas`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Asiento no encontrado');
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById('lbl-id').textContent = data.id;
-                    document.getElementById('lbl-distancia').textContent = data.distanciaPantalla;
-                    document.getElementById('lbl-angulo').textContent = data.anguloVision;
-                    document.getElementById('lbl-conveniencia').textContent = data.nivelConveniencia || data.calificacion;
-                    
-                    const estadoEl = document.getElementById('lbl-estado');
-                    if (data.disponible) {
-                        estadoEl.textContent = 'Disponible';
-                        estadoEl.style.color = '#38bdf8';
-                    } else {
-                        estadoEl.textContent = 'Ocupado';
-                        estadoEl.style.color = '#ef4444';
-                    }
-
-                    const simEl = document.getElementById('lbl-simulacion');
-                    if (data.distanciaPantalla < 4) {
-                        simEl.textContent = `Inmersión frontal cercana (${data.distanciaPantalla}m, ${data.anguloVision}°)`;
-                    } else if (data.distanciaPantalla > 7) {
-                        simEl.textContent = `Vista panorámica trasera (${data.distanciaPantalla}m, ${data.anguloVision}°)`;
-                    } else {
-                        simEl.textContent = `Punto óptimo central (${data.distanciaPantalla}m, ${data.anguloVision}°)`;
-                    }
-
-                    // Resaltar en mapa
-                    document.querySelectorAll('.seat-button').forEach(btn => {
-                        btn.classList.remove('selected');
-                        if (btn.getAttribute('data-id') === data.id) {
-                            btn.classList.add('selected');
-                        }
-                    });
-
-                    // Mostrar panel
-                    document.getElementById('panel-caracteristicas').style.display = 'block';
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    alert("No se pudieron cargar los datos del asiento.");
-                });
-        }
-
-        function cerrarPanel() {
-            document.getElementById('panel-caracteristicas').style.display = 'none';
-            document.querySelectorAll('.seat-button').forEach(btn => btn.classList.remove('selected'));
-        }
-
-        function cargarMapa() {
-            fetch('/api/asientos')
-                .then(res => res.json())
-                .then(asientos => {
-                    const grid = document.getElementById('grid-asientos');
-                    grid.innerHTML = '';
-
-                    const filasMap = {};
-                    asientos.forEach(a => {
-                        if (!filasMap[a.fila]) filasMap[a.fila] = [];
-                        filasMap[a.fila].push(a);
-                    });
-
-                    Object.keys(filasMap).sort().forEach(filaKey => {
-                        const rowDiv = document.createElement('div');
-                        rowDiv.className = 'seat-row';
-
-                        const lbl = document.createElement('div');
-                        lbl.className = 'row-label';
-                        lbl.textContent = filaKey;
-                        rowDiv.appendChild(lbl);
-
-                        filasMap[filaKey].sort((a,b) => a.numero - b.numero).forEach(a => {
-                            const btn = document.createElement('button');
-                            btn.className = 'seat-button' + (a.disponible ? '' : ' occupied');
-                            btn.textContent = a.numero;
-                            btn.setAttribute('data-id', a.id);
-                            btn.title = `Asiento ${a.id}: ${a.distanciaPantalla}m | ${a.anguloVision}° | Conveniencia: ${a.nivelConveniencia}/5`;
-                            btn.onclick = () => verCaracteristicas(a.id);
-                            rowDiv.appendChild(btn);
-                        });
-
-                        grid.appendChild(rowDiv);
-                    });
-                })
-                .catch(err => {
-                    console.error("Error cargando mapa:", err);
-                    document.getElementById('grid-asientos').innerHTML = '<p style="color: #ef4444;">Error al cargar los asientos de la sala.</p>';
-                });
-        }
-
-        document.addEventListener('DOMContentLoaded', cargarMapa);
-    </script>
+    <script src="/mapa-asientos.js" defer></script>
 </body>
 </html>

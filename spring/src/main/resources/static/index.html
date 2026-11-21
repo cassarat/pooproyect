@@ -831,6 +831,8 @@
             margin-top: 8px;
         }
 
+        .seat-chip:disabled { opacity: 0.45; cursor: not-allowed; }
+
         .seat-chip {
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
@@ -1146,20 +1148,12 @@
             <div id="modalFormContent">
                 <div class="form-group">
                     <label class="form-label" for="selectPelicula">Película:</label>
-                    <select id="selectPelicula" class="form-select" onchange="actualizarPrecioModal()">
-                        <option value="nebula">Nebula: Horizonte Infinito ($7.50)</option>
-                        <option value="abismo">Silencio Abisal ($7.00)</option>
-                        <option value="starhaven">Starhaven: La Odisea Celestial ($6.50)</option>
-                    </select>
+                    <select id="selectPelicula" class="form-select" onchange="actualizarPrecioModal()"><option value="">Cargando cartelera...</option></select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="selectHorario">Horario de Función:</label>
-                    <select id="selectHorario" class="form-select">
-                        <option value="15:30">15:30 hrs (Sala 1 - Pantalla Panorámica)</option>
-                        <option value="18:15">18:15 hrs (Sala 1 - Pantalla Panorámica)</option>
-                        <option value="21:00">21:00 hrs (Sala 1 - Pantalla Panorámica)</option>
-                    </select>
+                    <select id="selectHorario" class="form-select"><option value="">Selecciona película</option></select>
                 </div>
 
                 <div class="form-group">
@@ -1187,13 +1181,14 @@
 
                 <div class="modal-price-summary">
                     <div>
-                        <div class="price-label">Asientos seleccionados: <strong id="resumenAsientosCount" style="color: white;">2</strong></div>
+                        <div class="price-label">Asientos seleccionados: <strong id="resumenAsientosCount" style="color: white;">0</strong></div>
                         <div class="price-label">Precio por boleto: <strong id="resumenPrecioUnitario" style="color: white;">$7.50</strong></div>
                     </div>
                     <div class="price-value" id="resumenTotal">$15.00</div>
                 </div>
 
-                <button class="btn-confirm-buy" onclick="procesarCompra()">Confirmar Compra y Emitir Boletos</button>
+                <p id="compra-estado" role="status" style="margin:12px 0;color:var(--text-secondary)"></p>
+                <button id="compra-confirmar" type="button" class="btn-confirm-buy" onclick="procesarCompra()" disabled>Confirmar Compra y Emitir Boletos</button>
             </div>
 
             <!-- Vista de Recibo / Confirmación -->
@@ -1345,7 +1340,7 @@
         const moviesGrid = document.getElementById('moviesGrid');
 
         function cargarCartelera() {
-            fetch('/api/peliculas')
+            return fetch('/api/peliculas')
                 .then(res => res.json())
                 .then(peliculas => {
                     peliculasData = peliculas;
@@ -1429,118 +1424,7 @@
             });
         });
 
-        // 4. Modal de Compra de Boletos
-        const modalCompra = document.getElementById('modalCompra');
-        const modalFormContent = document.getElementById('modalFormContent');
-        const ticketReceipt = document.getElementById('ticketReceipt');
-        const modalSeatChips = document.getElementById('modalSeatChips');
-
-        // Asientos disponibles para selección rápida en el modal
-        const asientosDisponiblesModal = ['A1', 'A2', 'C5', 'C6', 'E4', 'E5', 'F9', 'F10'];
-        let asientosSeleccionadosModal = ['A1', 'A2'];
-
-        function initSeatChips() {
-            modalSeatChips.innerHTML = '';
-            asientosDisponiblesModal.forEach(asientoId => {
-                const chip = document.createElement('button');
-                chip.type = 'button';
-                chip.className = 'seat-chip' + (asientosSeleccionadosModal.includes(asientoId) ? ' active' : '');
-                chip.textContent = asientoId;
-                chip.onclick = () => toggleSeatSelection(asientoId, chip);
-                modalSeatChips.appendChild(chip);
-            });
-        }
-
-        function toggleSeatSelection(asientoId, chip) {
-            if (asientosSeleccionadosModal.includes(asientoId)) {
-                if (asientosSeleccionadosModal.length === 1) {
-                    alert('Debes seleccionar al menos un asiento.');
-                    return;
-                }
-                asientosSeleccionadosModal = asientosSeleccionadosModal.filter(a => a !== asientoId);
-                chip.classList.remove('active');
-            } else {
-                asientosSeleccionadosModal.push(asientoId);
-                chip.classList.add('active');
-            }
-            actualizarPrecioModal();
-        }
-
-        function abrirModalCompra(peliculaId = 'nebula') {
-            const select = document.getElementById('selectPelicula');
-            if (select) select.value = peliculaId;
-            
-            modalFormContent.style.display = 'block';
-            ticketReceipt.classList.remove('active');
-            
-            initSeatChips();
-            actualizarPrecioModal();
-            modalCompra.classList.add('active');
-        }
-
-        function cerrarModalCompra() {
-            modalCompra.classList.remove('active');
-        }
-
-        function actualizarPrecioModal() {
-            const selectPelicula = document.getElementById('selectPelicula');
-            const peliculaSeleccionada = peliculasData.find(p => p.id === selectPelicula.value) || { precio: 7.50 };
-            
-            const count = asientosSeleccionadosModal.length;
-            const unitario = peliculaSeleccionada.precio;
-            const total = (count * unitario).toFixed(2);
-
-            document.getElementById('resumenAsientosCount').textContent = count;
-            document.getElementById('resumenPrecioUnitario').textContent = `$${unitario.toFixed(2)}`;
-            document.getElementById('resumenTotal').textContent = `$${total}`;
-        }
-
-        function procesarCompra() {
-            const peliculaId = document.getElementById('selectPelicula').value;
-            const horario = document.getElementById('selectHorario').value;
-            const nombre = document.getElementById('inputNombre').value.trim() || 'Cliente Cine Nova';
-            const correo = document.getElementById('inputCorreo').value.trim() || 'cliente@cinenova.com';
-
-            const payload = {
-                peliculaId: peliculaId,
-                horario: horario,
-                asientos: asientosSeleccionadosModal,
-                nombreCliente: nombre,
-                correo: correo
-            };
-
-            fetch('/api/boletos/compra', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.exito) {
-                    // Mostrar boleto
-                    document.getElementById('ticketCodigo').textContent = data.reserva.codigoReserva;
-                    document.getElementById('ticketPelicula').textContent = data.reserva.pelicula;
-                    document.getElementById('ticketHorario').textContent = data.reserva.horario;
-                    document.getElementById('ticketAsientos').textContent = data.reserva.asientos.join(', ');
-                    document.getElementById('ticketTotal').textContent = `$${data.reserva.totalPagar.toFixed(2)}`;
-                    document.getElementById('ticketTitular').textContent = data.reserva.cliente;
-
-                    modalFormContent.style.display = 'none';
-                    ticketReceipt.classList.add('active');
-                } else {
-                    alert(data.error || 'Ocurrió un error al procesar la compra.');
-                }
-            })
-            .catch(err => {
-                console.error("Error al comprar:", err);
-                alert("Error al comunicarse con el servidor de boletos.");
-            });
-        }
-
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarCartelera();
-        });
     </script>
+    <script src="/compra.js"></script>
 </body>
 </html>

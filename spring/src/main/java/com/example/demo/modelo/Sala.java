@@ -1,59 +1,56 @@
 package com.example.demo.modelo;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+/** La disponibilidad del mapa, del recomendador y de la compra proviene de SQLite. */
 @Component
 public class Sala {
-    private double tamanoPantalla;
-    private String filas;
-    private List<Asiento> asientos;
+    private final AsientoRepository repositorio;
 
-    public Sala() {
-        this.tamanoPantalla = 15.5;
-        this.filas = "A-G";
-        this.asientos = new ArrayList<>();
-
-        // Inicialización automática de 70 asientos (Filas A-G, Asientos 1-10)
-        char[] nombresFilas = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
-        
-        for (int i = 0; i < nombresFilas.length; i++) {
-            String fila = String.valueOf(nombresFilas[i]);
-            
-            // La fila A está más cerca de la pantalla (ej: 3 metros), la G más lejos (ej: 15 metros)
-            double distanciaBase = 3.0 + (i * 2.0); 
-
-            for (int num = 1; num <= 10; num++) {
-                // Cálculo simple de ángulo: Los del centro (5 y 6) tienen 0 grados (frente a la pantalla)
-                // Los de los extremos tienen ángulos más pronunciados
-                double angulo = Math.abs(5.5 - num) * 8.0; 
-                
-                // Cálculo de conveniencia: Entre más cerca al centro y a una distancia media, mejor (1 a 5 estrellas)
-                int conveniencia = 5 - (int)(angulo / 15);
-                if (conveniencia < 1) conveniencia = 1;
-
-                // Crear el asiento y agregarlo a la lista
-                String urlImagen = "url_360_" + fila + num;
-                asientos.add(new Asiento(fila, num, true, distanciaBase, angulo, conveniencia, urlImagen));
-            }
-        }
+    public Sala(AsientoRepository repositorio) {
+        this.repositorio = repositorio;
     }
 
     public List<Asiento> mostrarAsientos() {
-        return this.asientos;
+        return repositorio.findAll().stream()
+                .sorted(Comparator.comparing(Asiento::getFila).thenComparingInt(Asiento::getNumero))
+                .toList();
     }
 
     public Asiento buscarAsiento(String fila, int numero) {
-        for (Asiento a : asientos) {
-            if (a.getFila().equalsIgnoreCase(fila) && a.getNumero() == numero) {
-                return a;
-            }
-        }
-        return null;
+        if (fila == null) return null;
+        return repositorio.findById(fila.trim().toUpperCase(Locale.ROOT) + numero).orElse(null);
     }
 
-    // Getters
-    public double getTamanoPantalla() { return tamanoPantalla; }
-    public String getFilas() { return filas; }
+    /** Todos los asientos se ocupan juntos; un conflicto revierte la operación completa. */
+    @Transactional
+    public List<Asiento> confirmarSeleccion(List<String> ids) {
+        if (ids == null || ids.isEmpty() || ids.size() > 70
+                || ids.stream().anyMatch(id -> id == null || !id.trim().matches("(?i)[A-G](?:10|[1-9])"))) {
+            throw new IllegalArgumentException("Selecciona entre 1 y 70 asientos válidos de la sala A-G.");
+        }
+        List<String> normalizados = ids.stream()
+                .map(id -> id.trim().toUpperCase(Locale.ROOT)).sorted().toList();
+        if (normalizados.stream().distinct().count() != normalizados.size()) {
+            throw new IllegalArgumentException("La selección contiene asientos repetidos.");
+        }
+
+        // La comprobación y la escritura son una única sentencia SQL por asiento.
+        // No se hace una lectura previa que pueda quedar desactualizada antes de escribir.
+        for (String id : normalizados) {
+            if (repositorio.ocuparSiDisponible(id) != 1) {
+                throw new IllegalStateException("El asiento " + id + " ya no está disponible. Actualiza el mapa.");
+            }
+        }
+        return repositorio.findAllById(normalizados).stream()
+                .sorted(Comparator.comparing(Asiento::getFila).thenComparingInt(Asiento::getNumero))
+                .toList();
+    }
+
+    public double getTamanoPantalla() { return 15.5; }
+    public String getFilas() { return "A-G"; }
 }

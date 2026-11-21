@@ -27,7 +27,10 @@ public class AsientoController {
     // --- ENDPOINT ANTERIOR: Devuelve detalles de un asiento (Requisito Nathalia) ---
     @GetMapping("/{id}/caracteristicas")
     public ResponseEntity<Asiento> obtenerCaracteristicas(@PathVariable String id) {
-        String fila = id.substring(0, 1).toUpperCase(); 
+        if (!id.matches("(?i)[A-G](?:10|[1-9])")) {
+            return ResponseEntity.badRequest().build();
+        }
+        String fila = id.substring(0, 1).toUpperCase();
         int numero = Integer.parseInt(id.substring(1));
 
         Asiento asiento = sala.buscarAsiento(fila, numero);

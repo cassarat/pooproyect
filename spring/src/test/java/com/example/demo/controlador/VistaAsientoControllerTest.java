@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.junit.jupiter.api.Assertions.*;
 
 class VistaAsientoControllerTest {
-    private final Sala sala = new Sala();
+    private final Sala sala = com.example.demo.DatosSala.crear();
     private final MockMvc mvc = MockMvcBuilders.standaloneSetup(
             new VistaAsientoController(sala, new VistaAsientoService())).build();
 
